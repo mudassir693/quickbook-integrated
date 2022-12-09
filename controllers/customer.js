@@ -1,71 +1,6 @@
-// import axios from 'axios'
-// import OAuthClient from 'intuit-oauth'
-// // const oauthClient = new OAuthClient({
-// //     clientId: process.env.ClientId,
-// //     clientSecret: process.env.ClientSceret,
-// //     environment: 'sandbox',
-// //     redirectUri: 'http://localhost:5000/',
-// //     logging: true  
-// //   });
 
-// // oauthClient
-// //     .createToken('com.intuit.quickbooks.accounting')
-// //     .then(function (authResponse) {
-// //     console.log('The Token is  ' + JSON.stringify(authResponse.getJson()));
-// //     })
-// //     .catch(function (e) {
-// //     console.error('The error message is :' + e.originalMessage);
-// //     console.error(e);
-// //     });
-// let getToken  = async ()=>{
-//     //  basic:QUJudVhleDhhblJJb2NIYlZDZ0FsUXNvVFhxaGlKYTYzbE1vRzB3eHgzcHFQdWRNNmw6Qlh1TFBJcGJEU0RKWWxreWNINFJ1Zm1CMTBQS3Azekw0bUlGT0loUg==
-//     const headers = {
-//         'Content-Type': 'application/x-www-form-urlencoded',
-//         'Authorization': `Basic QUJudVhleDhhblJJb2NIYlZDZ0FsUXNvVFhxaGlKYTYzbE1vRzB3eHgzcHFQdWRNNmw6Qlh1TFBJcGJEU0RKWWxreWNINFJ1Zm1CMTBQS3Azekw0bUlGT0loUg==`,
-//         'accept': 'application/json',
-//       };
-//     let body = new URLSearchParams({
-//         grant_type: 'refresh_token',
-//         refresh_token: 'AB11679044742kBwLp6kykU3RbAETYIdwBX1nEIjDsw8mz2KXE',
-//       })
-//       try{
-//           let resp = await axios.post('https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer',body,headers)
-//           console.log(resp)
-//       }catch(e){
-//         console.log(e)
-//       }
-// }
-// getToken()
-
-// export const getCustomerInvoices = async(req,res)=>{
-//     try {
-//         const resp = await axios.post('https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365258631820/query?minorversion=65',"select * from invoice",{ 
-//             headers:{
-//                 Authorization:'Bearer '+ process.env.accessToken
-//             }
-//         })
-//         return res.status(200).json({resp})
-//     } catch (error) {
-//         console.log(error)
-//         return res.status(500).json({data:"error check console",error})
-//     }
-// }
-
-
-import QuickBooks from 'node-quickbooks'
 import tokenDb from '../tokenDB.js'
 import qboFn from '../config/Auth.js'
-// var qbo = new QuickBooks(process.env.ClientID,
-//     process.env.ClientSceret,
-//     tokenDb[0]?.accessToken,
-//     true, // no token secret for oAuth 2.0
-//     "4620816365258631820",
-//     true, // use the sandbox?
-//     true, // enable debugging?
-//     null, // set minorversion, or null for the latest version
-//     '2.0', //oAuth version
-//     tokenDb[0]?.refresh_token //refresh token
-//     );
 
 export const getCustomerInvoices = async(req,res)=>{
     try{
@@ -212,6 +147,10 @@ export const createInvoice = async(req,res)=>{
 export const getAllCustomerInvoices = async (req,res)=>{
     
     try {
+        let qbo = qboFn(tokenDb)
+        console.log(tokenDb)
+        if(tokenDb.length==0)return res.status(400).json({data:"qbo instance not initialized",error:true})
+
         qbo.findInvoices([{CustomerRef:req.params.cId}],(err,resp)=>{
             if(err){
                 return res.status(400).json({data:err, error:true})
@@ -228,6 +167,10 @@ export const getAllCustomerInvoices = async (req,res)=>{
 
 export const getAllPayments = async(req,res)=>{
     try {
+        let qbo = qboFn(tokenDb)
+        console.log(tokenDb)
+        if(tokenDb.length==0)return res.status(400).json({data:"qbo instance not initialized",error:true})
+
          qbo.findPayments({CustomerRef:req.params.pId},(err,resp)=>{
             if(err){
                 return res.status(400).json({data:err, error:true})
@@ -237,6 +180,38 @@ export const getAllPayments = async(req,res)=>{
             return res.status(200).json({data:newArr, error:false})
         })
     } catch (error) {
-        
+        console.log(error)
+        return res.status(500).json({data:error, error:true})
+    }
+}
+
+export const getAllCustomerRecord = async(req,res)=>{
+    try {
+        let qbo = qboFn(tokenDb)
+        console.log(tokenDb)
+        if(tokenDb.length==0)return res.status(400).json({data:"qbo instance not initialized",error:true})
+        qbo.findPayments({CustomerRef:req.params.pId},(err,payments)=>{
+            if(err){
+                return res.status(400).json({data:err, error:true})
+            }
+            qbo.findInvoices([{CustomerRef:req.params.pId}],(err,invoices)=>{
+                if(err){
+                    return res.status(400).json({data:err, error:true})
+                }
+                // let Arr = payments.QueryResponse.Payment
+
+                let Arr2 = payments.QueryResponse.Payment.concat(invoices.QueryResponse.Invoice)
+
+                console.log(Arr2.length)
+                let newArr = Arr2.sort((a,b)=>new Date(a.TxnDate).getTime() - new Date(b.TxnDate).getTime())
+                return res.status(200).json({data:newArr, error:false})
+            })
+            // console.log(payments.QueryResponse.Payment.length)
+            // let newArr = payments.QueryResponse.Payment.sort((a,b)=>new Date(a.TxnDate).getTime() - new Date(b.TxnDate).getTime())
+            // return res.status(200).json({data:newArr, error:false})
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({data:error, error:true})
     }
 }
