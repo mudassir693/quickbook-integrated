@@ -1,0 +1,90 @@
+2022-12-05T19:37:33.982Z error: Create Token () threw an exception : {
+  "authResponse": {
+    "token": {
+      "realmId": "",
+      "token_type": "",
+      "access_token": "",
+      "refresh_token": "",
+      "expires_in": 0,
+      "x_refresh_token_expires_in": 0,
+      "id_token": "",
+      "latency": 60000,
+      "createdAt": 1670269052329
+    },
+    "response": {
+      "url": "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer",
+      "headers": {
+        "date": "Mon, 05 Dec 2022 19:37:08 GMT",
+        "content-type": "application/json;charset=utf-8",
+        "content-length": "27",
+        "connection": "close",
+        "intuit_tid": "1-638e4864-4d223c0874471e603a6dd140",
+        "x-spanid": "49c764f1-12b4-4028-b0bb-672c6ebc3c0a",
+        "x-amzn-trace-id": "Root=1-638e4864-4d223c0874471e603a6dd140",
+        "x-content-type-options": "nosniff",
+        "server": "envoy",
+        "cache-control": "no-cache, no-store",
+        "pragma": "no-cache",
+        "x-envoy-upstream-service-time": "3",
+        "strict-transport-security": "max-age=31536000"
+      },
+      "body": "{\"error\":\"invalid_request\"}",
+      "status": 400,
+      "statusText": "Bad Request"
+    },
+    "body": "{\"error\":\"invalid_request\"}",
+    "json": {
+      "error": "invalid_request"
+    },
+    "intuit_tid": "1-638e4864-4d223c0874471e603a6dd140"
+  },
+  "originalMessage": "Response has an Error",
+  "error": "invalid_request",
+  "error_description": "Bad Request",
+  "intuit_tid": "1-638e4864-4d223c0874471e603a6dd140"
+}
+2022-12-05T19:43:44.393Z error: Create Token () threw an exception : {
+  "authResponse": {
+    "token": {
+      "realmId": "",
+      "token_type": "",
+      "access_token": "",
+      "refresh_token": "",
+      "expires_in": 0,
+      "x_refresh_token_expires_in": 0,
+      "id_token": "",
+      "latency": 60000,
+      "createdAt": 1670269422527
+    },
+    "response": {
+      "url": "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer",
+      "headers": {
+        "date": "Mon, 05 Dec 2022 19:43:18 GMT",
+        "content-type": "application/json;charset=utf-8",
+        "content-length": "27",
+        "connection": "close",
+        "intuit_tid": "1-638e49d6-6cea453726fe328d77eaf1ef",
+        "x-spanid": "05e78144-633b-4033-afa6-69a0af3c39c1",
+        "x-amzn-trace-id": "Root=1-638e49d6-6cea453726fe328d77eaf1ef",
+        "x-content-type-options": "nosniff",
+        "server": "envoy",
+        "cache-control": "no-cache, no-store",
+        "pragma": "no-cache",
+        "x-envoy-upstream-service-time": "3",
+        "strict-transport-security": "max-age=31536000"
+      },
+      "body": "{\"error\":\"invalid_request\"}",
+      "status": 400,
+      "statusText": "Bad Request"
+    },
+    "body": "{\"error\":\"invalid_request\"}",
+    "json": {
+      "error": "invalid_request"
+    },
+    "intuit_tid": "1-638e49d6-6cea453726fe328d77eaf1ef"
+  },
+  "originalMessage": "Response has an Error",
+  "error": "invalid_request",
+  "error_description": "Bad Request",
+  "intuit_tid": "1-638e49d6-6cea453726fe328d77eaf1ef"
+}
