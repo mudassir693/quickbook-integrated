@@ -1,76 +1,78 @@
-import OAuthClient from 'intuit-oauth'
+import OAuthClient from 'intuit-oauth';
+import QuickBooks from 'node-quickbooks';
+import tokenDb from '../tokenDB.js';
+
 let oauthClient = null;
-let oauth2_token_json = null;
-import QuickBooks from 'node-quickbooks'
 
-import tokenDb from '../tokenDB.js'
+export const getAuthUrl = async (req, res) => {
+  oauthClient = new OAuthClient({
+    clientId: process.env.ClientID,
+    clientSecret: process.env.ClientSecret,
+    environment: "sandbox",
+    redirectUri: "http://localhost:5000/api/auth/callback",
+  });
 
-export const getAuthUrl = async(req,res)=>{
-    oauthClient = new OAuthClient({
-        clientId: process.env.ClientID,
-        clientSecret: process.env.ClientSceret,
-        environment: "sandbox",
-        redirectUri: "http://localhost:5000/api/auth/callback",
-      });
-    
-      const authUri = oauthClient.authorizeUri({
-        scope: [OAuthClient.scopes.Accounting],
-        state: 'intuit-test',
-      });
-    res.send(authUri)
-}
-
-export const callbackUrl =   (req, res) => {
-    oauthClient
-        .createToken(req.url)
-            .then(function (authResponse) {
-                oauth2_token_json = JSON.stringify(authResponse.getJson(), null, 2);
-                tokenDb.push(authResponse.getJson())
-                console.log('waiting for:',authResponse.getJson())
-            })
-            .catch(function (e) {
-                console.error(e);
-            });
-
-    res.send('');
+  const authUri = oauthClient.authorizeUri({
+    scope: [OAuthClient.scopes.Accounting],
+    state: 'intuit-test',
+  });
+  
+  res.send(authUri);
 };
 
-export const getOauth = (req,res)=>{
-    try{
-        return res.status(200).json({data:tokenDb,error:false})
-    }catch(err){
-        return res.status(500).json({data:"error",error:true})
-    }
-}
+export const callbackUrl = (req, res) => {
+  oauthClient.createToken(req.url)
+    .then((authResponse) => {
+      const tokenData = authResponse.getJson();
+      tokenDb.push(tokenData);
+      console.log('OAuth Response:', tokenData);
+    })
+    .catch((error) => {
+      console.error('Error during OAuth token creation:', error);
+    });
+
+  res.send('');
+};
+
+export const getOauth = (req, res) => {
+  try {
+    return res.status(200).json({ data: tokenDb, error: false });
+  } catch (error) {
+    return res.status(500).json({ data: "Error fetching OAuth data", error: true });
+  }
+};
 
 export const refreshToken = (req, res) => {
-    oauthClient
-      .refresh()
-      .then(function (authResponse) {
-        console.log(`The Refresh Token is  ${JSON.stringify(authResponse.getJson())}`);
-        oauth2_token_json = JSON.stringify(authResponse.getJson(), null, 2);
-        res.send(oauth2_token_json);
-      })
-      .catch(function (e) {
-        console.error(e);
-      });
+  oauthClient.refresh()
+    .then((authResponse) => {
+      const refreshedToken = authResponse.getJson();
+      console.log('Refreshed OAuth Token:', JSON.stringify(refreshedToken));
+      res.send(JSON.stringify(refreshedToken, null, 2));
+    })
+    .catch((error) => {
+      console.error('Error refreshing OAuth token:', error);
+    });
+};
+
+export const getQuickBooksInstance = (token) => {
+  const accessToken = token[0]?.access_token;
+  const refreshToken = token[0]?.refresh_token;
+
+  if (!accessToken) {
+    console.error('Access token is missing');
+    return null;
   }
 
-
-
-export default (token)=>{
-    console.log('what happened: ',token[0]?.access_token)
-    let qbo = new QuickBooks(process.env.ClientID,
-        process.env.ClientSceret,
-        token[0]?.access_token,
-        true, // no token secret for oAuth 2.0
-        process.env.CompanyId,
-        true, // use the sandbox?
-        true, // enable debugging?
-        null, // set minorversion, or null for the latest version
-        '2.0', //oAuth version
-        token[0]?.refresh_token //refresh token
-        );
-
-        return qbo
-}
+  return new QuickBooks(
+    process.env.ClientID,
+    process.env.ClientSecret,
+    accessToken,
+    true, 
+    process.env.CompanyId,
+    true, 
+    true, 
+    null, 
+    '2.0', 
+    refreshToken 
+  );
+};
