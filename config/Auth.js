@@ -19,7 +19,7 @@ export const getAuthUrl = async(req,res)=>{
     res.send(authUri)
 }
 
-export const callbackUrl =   (req, res) => {
+export const callbackUrl2 =   (req, res) => {
     oauthClient
         .createToken(req.url)
             .then(function (authResponse) {
