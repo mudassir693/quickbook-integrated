@@ -3,7 +3,7 @@ let oauthClient = null;
 let oauth2_token_json = null;
 import QuickBooks from 'node-quickbooks'
 
-import tokenDb from '../tokenDB.js'
+import tokenDb from '/tokenDB.js'
 
 export const getAuthUrl = async(req,res)=>{
     oauthClient = new OAuthClient({
