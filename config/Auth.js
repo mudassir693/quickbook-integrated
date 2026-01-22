@@ -5,7 +5,7 @@ import QuickBooks from 'node-quickbooks'
 
 import tokenDb from '../tokenDB.js'
 
-export const getAuthUrl1 = async(req,res)=>{
+export const getAuthUrl3 = async(req,res)=>{
     oauthClient = new OAuthClient({
         clientId: process.env.ClientID,
         clientSecret: process.env.ClientSceret,
