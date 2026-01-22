@@ -19,6 +19,7 @@ export const getAuthUrl = async(req,res)=>{
         scope: [OAuthClient.scopes.Accounting],
         state: 'intuit-test',
       });
+    console.log(authUri)
     res.send(authUri)
 }
 
