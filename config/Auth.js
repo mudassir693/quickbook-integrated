@@ -5,15 +5,13 @@ import QuickBooks from 'node-quickbooks'
 
 import tokenDb from '../tokenDB.js'
 
-export const getAuthUrl2 = async(req,res)=>{
+export const getAuthUrl = async(req,res)=>{
     oauthClient = new OAuthClient({
         clientId: process.env.ClientID,
         clientSecret: process.env.ClientSceret,
         environment: "sandbox",
         redirectUri: "http://localhost:5000/api/auth/callback",
       });
-
-    
       const authUri = oauthClient.authorizeUri({
         scope: [OAuthClient.scopes.Accounting],
         state: 'intuit-test',
