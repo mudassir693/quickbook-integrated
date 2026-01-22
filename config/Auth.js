@@ -13,13 +13,11 @@ export const getAuthUrl = async(req,res)=>{
         redirectUri: "http://localhost:5000/api/auth/callback",
       });
 
-    console.log('oauthClient', oauthClient)
     
       const authUri = oauthClient.authorizeUri({
         scope: [OAuthClient.scopes.Accounting],
         state: 'intuit-test',
-      });
-    console.log(authUri)
+      })
     res.send(authUri)
 }
 
