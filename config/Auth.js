@@ -12,6 +12,8 @@ export const getAuthUrl = async(req,res)=>{
         environment: "sandbox",
         redirectUri: "http://localhost:5000/api/auth/callback",
       });
+
+    console.log('oauthClient', oauthClient)
     
       const authUri = oauthClient.authorizeUri({
         scope: [OAuthClient.scopes.Accounting],
